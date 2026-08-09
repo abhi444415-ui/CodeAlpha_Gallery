@@ -1,0 +1,692 @@
+<!DOCTYPE html>\
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alfa Gallery | Next-Gen Visual Intelligence</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        
+        <!-- SIDEBAR NAVIGATION -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fa-solid fa-wand-magic-sparkles logo-icon"></i>
+                    <span>Aetheria <span class="accent-text">AI</span></span>
+                </div>
+                <button class="mobile-close-btn" id="mobile-sidebar-close" aria-label="Close sidebar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Fast Search Container -->
+            <div class="search-wrapper">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="search-input" placeholder="Search photos, tags, colors..." aria-label="Search photos">
+                    <button class="clear-search-btn" id="clear-search-btn" style="display: none;">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Categories & Filters Navigation -->
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">Library</div>
+                <ul>
+                    <li class="nav-item active" data-filter="all">
+                        <i class="fa-solid fa-images"></i>
+                        <span>All Photos</span>
+                        <span class="count-badge" id="count-all">0</span>
+                    </li>
+                    <li class="nav-item" data-filter="camera">
+                        <i class="fa-solid fa-camera"></i>
+                        <span>Camera</span>
+                        <span class="count-badge" id="count-camera">0</span>
+                    </li>
+                    <li class="nav-item" data-filter="downloads">
+                        <i class="fa-solid fa-cloud-arrow-down"></i>
+                        <span>Downloads</span>
+                        <span class="count-badge" id="count-downloads">0</span>
+                    </li>
+                    <li class="nav-item" data-filter="screenshots">
+                        <i class="fa-solid fa-crop-simple"></i>
+                        <span>Screenshots</span>
+                        <span class="count-badge" id="count-screenshots">0</span>
+                    </li>
+                </ul>
+
+                <div class="nav-section-title">Features</div>
+                <ul>
+                    <li class="nav-item" id="nav-stories" data-filter="stories">
+                        <i class="fa-solid fa-circle-play"></i>
+                        <span>AI Highlight Stories</span>
+                        <span class="count-badge" id="count-stories">0</span>
+                    </li>
+                    <li class="nav-item secure-nav" id="nav-secure" data-filter="secure">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Secure Folder</span>
+                        <span class="count-badge" id="count-secure"><i class="fa-solid fa-lock"></i></span>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Bottom Settings / Theme Toggle -->
+            <div class="sidebar-footer">
+                <div class="theme-toggle-container">
+                    <span class="theme-label"><i class="fa-solid fa-moon theme-icon"></i> Dark Mode</span>
+                    <label class="switch" for="theme-checkbox">
+                        <input type="checkbox" id="theme-checkbox" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="system-status">
+                    <div class="status-indicator online"></div>
+                    <span>AI Engine Active</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="main-content">
+            
+            <!-- TOP BAR HEADER -->
+            <header class="top-bar">
+                <div class="header-left">
+                    <button class="mobile-menu-btn" id="mobile-menu-toggle" aria-label="Open sidebar">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="breadcrumb">
+                        <span class="parent-dir">Aetheria</span>
+                        <i class="fa-solid fa-chevron-right separator"></i>
+                        <span class="current-dir" id="breadcrumb-current">All Photos</span>
+                    </div>
+                </div>
+
+                <div class="header-actions">
+                    <button class="btn btn-secondary" id="bulk-story-btn">
+                        <i class="fa-solid fa-photo-film"></i> <span>Create Story</span>
+                    </button>
+                    <button class="btn btn-primary" id="upload-image-btn">
+                        <i class="fa-solid fa-plus"></i> <span>Import Image</span>
+                    </button>
+                    <input type="file" id="image-file-loader" accept="image/*" style="display: none;">
+                </div>
+            </header>
+
+            <!-- GALLERY GRID WORKSPACE -->
+            <section class="gallery-workspace">
+                
+                <!-- Active Filters & Tags Display -->
+                <div class="gallery-controls-bar">
+                    <div class="gallery-meta-summary">
+                        Showing <strong id="gallery-showing-count">0</strong> items
+                    </div>
+                    <div class="quick-tags" id="quick-tags-container">
+                        <span class="tag-pill active" data-tag="all">All Tags</span>
+                        <span class="tag-pill" data-tag="nature">Nature</span>
+                        <span class="tag-pill" data-tag="urban">Urban</span>
+                        <span class="tag-pill" data-tag="people">People</span>
+                        <span class="tag-pill" data-tag="remastered">Remastered</span>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div class="empty-state hidden" id="empty-state">
+                    <div class="empty-illustration">
+                        <i class="fa-solid fa-circle-question"></i>
+                    </div>
+                    <h2>No items found</h2>
+                    <p>Try searching for a different keyword or upload your own images.</p>
+                </div>
+
+                <!-- Masonry Gallery Grid -->
+                <div class="gallery-grid" id="gallery-grid">
+                    <!-- Cards will be dynamically generated by JS -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 1. FULLSCREEN LIGHTBOX MODAL -->
+    <div class="lightbox-overlay hidden" id="lightbox-modal">
+        <button class="lightbox-nav-btn prev-btn" id="lightbox-prev" aria-label="Previous image">
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        
+        <div class="lightbox-content">
+            <div class="lightbox-media-wrapper">
+                <img src="" alt="Lightbox View" id="lightbox-img">
+            </div>
+            
+            <!-- Interactive Action Panel -->
+            <div class="lightbox-toolbar">
+                <button class="tool-action-btn" id="lb-remaster-btn" title="AI Remaster (Auto-optimize detail)">
+                    <i class="fa-solid fa-sparkles"></i> <span>AI Remaster</span>
+                </button>
+                <button class="tool-action-btn" id="lb-edit-btn" title="AI Photo Assist & Editing Tools">
+                    <i class="fa-solid fa-crop-simple"></i> <span>Edit Photo</span>
+                </button>
+                <button class="tool-action-btn" id="lb-share-btn" title="Share Photo">
+                    <i class="fa-solid fa-share-nodes"></i> <span>Share</span>
+                </button>
+                <button class="tool-action-btn" id="lb-secure-btn" title="Move to Secure Folder">
+                    <i class="fa-solid fa-lock"></i> <span>Secure Lock</span>
+                </button>
+                <button class="tool-action-btn" id="lb-info-btn" title="Show Metadata Info">
+                    <i class="fa-solid fa-circle-info"></i> <span>Details</span>
+                </button>
+            </div>
+        </div>
+
+        <button class="lightbox-nav-btn next-btn" id="lightbox-next" aria-label="Next image">
+            <i class="fa-solid fa-chevron-right"></i>
+        </button>
+
+        <button class="lightbox-close-btn" id="lightbox-close" aria-label="Close Lightbox">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <!-- Slide-out Details panel -->
+        <div class="lightbox-details-panel hidden" id="lightbox-details-panel">
+            <div class="details-header">
+                <h3>Image Metadata</h3>
+                <button class="close-details-btn" id="close-details-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="details-body" id="lightbox-details-body">
+                <!-- Dynamic text populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. AI REMASTER COMPANION MODAL (Before/After split slider) -->
+    <div class="modal-overlay hidden" id="remaster-modal">
+        <div class="glass-card modal-card remaster-card">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-sparkles text-glow"></i> AI Remaster Engine</h2>
+                <button class="close-btn" id="remaster-close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body remaster-body">
+                <p class="modal-desc">Automatic resolution upscaling, high-dynamic contrast leveling, and structural noise filtering.</p>
+                
+                <!-- Remaster Canvas / Slider View -->
+                <div class="remaster-visual-wrapper">
+                    <!-- Scanning Overlay -->
+                    <div class="remaster-scanner hidden" id="remaster-scanner">
+                        <div class="scan-bar"></div>
+                    </div>
+                    
+                    <!-- Split Slider Frame -->
+                    <div class="split-slider-container" id="split-slider-container">
+                        <!-- Before (Left) -->
+                        <div class="img-slice original-slice" id="original-slice">
+                            <img src="" alt="Original Blurry" id="remaster-img-original">
+                            <span class="slice-label left-label">Original</span>
+                        </div>
+                        
+                        <!-- After (Right) -->
+                        <div class="img-slice remastered-slice" id="remastered-slice">
+                            <img src="" alt="Remastered Clear" id="remaster-img-enhanced">
+                            <span class="slice-label right-label">AI Enhanced</span>
+                        </div>
+                        
+                        <!-- Handle -->
+                        <div class="slider-handle" id="slider-handle">
+                            <div class="handle-line"></div>
+                            <div class="handle-button">
+                                <i class="fa-solid fa-arrows-left-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="remaster-controls">
+                    <div class="processing-status" id="remaster-status">Ready to Remaster.</div>
+                    <div class="modal-actions">
+                        <button class="btn btn-secondary" id="run-remaster-btn">
+                            <i class="fa-solid fa-wand-magic-sparkles animate-pulse"></i> Run AI Remaster
+                        </button>
+                        <button class="btn btn-primary hidden" id="save-remaster-btn">
+                            <i class="fa-solid fa-floppy-disk"></i> Save Enhanced Version
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. PHOTO ASSIST & CANVAS EDITOR MODAL -->
+    <div class="modal-overlay hidden" id="editor-modal">
+        <div class="glass-card editor-card">
+            <div class="editor-layout">
+                
+                <!-- Editor Canvas Workspace -->
+                <div class="editor-canvas-workspace">
+                    <div class="editor-canvas-wrapper" id="canvas-wrapper">
+                        <!-- The interactive canvas -->
+                        <canvas id="editor-canvas"></canvas>
+                        
+                        <!-- Crop handles overlay -->
+                        <div class="crop-overlay-container hidden" id="crop-overlay">
+                            <div class="crop-box" id="crop-box">
+                                <div class="crop-handle nw" data-handle="nw"></div>
+                                <div class="crop-handle ne" data-handle="ne"></div>
+                                <div class="crop-handle sw" data-handle="sw"></div>
+                                <div class="crop-handle se" data-handle="se"></div>
+                                <div class="crop-grid-line h1"></div>
+                                <div class="crop-grid-line h2"></div>
+                                <div class="crop-grid-line v1"></div>
+                                <div class="crop-grid-line v2"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- AI Object Assistant selector box -->
+                        <div class="object-overlay-container hidden" id="object-overlay">
+                            <canvas id="ai-brush-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
+                            <!-- Pre-defined overlay objects for interaction -->
+                            <div class="ai-detect-box" id="detect-box-1" style="display: none; z-index: 10;">
+                                <span class="ai-detect-label">Target Object</span>
+                                <div class="ai-glow-border"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick action bottom bar -->
+                    <div class="canvas-action-bar">
+                        <div class="editor-status-text" id="editor-status">Loaded image in standard editor mode.</div>
+                        <div class="canvas-zoom-controls">
+                            <button class="icon-btn" id="editor-undo" title="Reset Changes"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Editor Right Controls Menu -->
+                <div class="editor-sidebar-controls">
+                    <div class="editor-header">
+                        <h2>Image Workshop</h2>
+                        <button class="close-btn" id="editor-close" title="Exit Editor"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <!-- Editor Mode Tabs -->
+                    <nav class="editor-tabs">
+                        <button class="editor-tab-btn active" data-editor-tab="adjust"><i class="fa-solid fa-slider"></i> Adjust</button>
+                        <button class="editor-tab-btn" data-editor-tab="crop-tab"><i class="fa-solid fa-crop"></i> Crop</button>
+                        <button class="editor-tab-btn" data-editor-tab="draw-tab"><i class="fa-solid fa-pen-nib"></i> Draw & Text</button>
+                        <button class="editor-tab-btn" data-editor-tab="ai-tab"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Assist</button>
+                    </nav>
+
+                    <!-- Tab Panel: Adjustments & Filters -->
+                    <div class="editor-tab-panel active" id="editor-panel-adjust">
+                        <div class="control-group">
+                            <h3 class="panel-section-title">Color Enhancements</h3>
+                            
+                            <div class="slider-control">
+                                <div class="slider-info">
+                                    <span>Brightness</span>
+                                    <span class="slider-value" id="val-brightness">100%</span>
+                                </div>
+                                <input type="range" class="control-slider" id="slider-brightness" min="0" max="200" value="100">
+                            </div>
+
+                            <div class="slider-control">
+                                <div class="slider-info">
+                                    <span>Contrast</span>
+                                    <span class="slider-value" id="val-contrast">100%</span>
+                                </div>
+                                <input type="range" class="control-slider" id="slider-contrast" min="0" max="200" value="100">
+                            </div>
+
+                            <div class="slider-control">
+                                <div class="slider-info">
+                                    <span>Saturation</span>
+                                    <span class="slider-value" id="val-saturation">100%</span>
+                                </div>
+                                <input type="range" class="control-slider" id="slider-saturation" min="0" max="200" value="100">
+                            </div>
+
+                            <div class="slider-control">
+                                <div class="slider-info">
+                                    <span>Sepia Tone</span>
+                                    <span class="slider-value" id="val-sepia">0%</span>
+                                </div>
+                                <input type="range" class="control-slider" id="slider-sepia" min="0" max="100" value="0">
+                            </div>
+
+                            <div class="slider-control">
+                                <div class="slider-info">
+                                    <span>Blur Radius</span>
+                                    <span class="slider-value" id="val-blur">0px</span>
+                                </div>
+                                <input type="range" class="control-slider" id="slider-blur" min="0" max="20" value="0">
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <h3 class="panel-section-title">Artistic Presets</h3>
+                            <div class="filter-presets-grid">
+                                <button class="filter-preset-btn active" data-preset="normal">
+                                    <div class="preset-preview normal-preview"></div>
+                                    <span>Normal</span>
+                                </button>
+                                <button class="filter-preset-btn" data-preset="grayscale">
+                                    <div class="preset-preview mono-preview"></div>
+                                    <span>Mono</span>
+                                </button>
+                                <button class="filter-preset-btn" data-preset="cyberpunk">
+                                    <div class="preset-preview neon-preview"></div>
+                                    <span>Cyber</span>
+                                </button>
+                                <button class="filter-preset-btn" data-preset="vintage">
+                                    <div class="preset-preview warm-preview"></div>
+                                    <span>Vintage</span>
+                                </button>
+                                <button class="filter-preset-btn" data-preset="cold">
+                                    <div class="preset-preview cold-preview"></div>
+                                    <span>Cold</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab Panel: Crop & Rotation -->
+                    <div class="editor-tab-panel" id="editor-panel-crop-tab">
+                        <div class="control-group">
+                            <h3 class="panel-section-title">Aspect Ratios</h3>
+                            <div class="crop-ratios-grid">
+                                <button class="ratio-btn active" data-ratio="free">Freeform</button>
+                                <button class="ratio-btn" data-ratio="1-1">1:1 Square</button>
+                                <button class="ratio-btn" data-ratio="4-3">4:3 Classic</button>
+                                <button class="ratio-btn" data-ratio="16-9">16:9 Cinema</button>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <h3 class="panel-section-title">Transformations</h3>
+                            <div class="transform-actions-row">
+                                <button class="btn btn-secondary flex-1" id="rotate-left-btn">
+                                    <i class="fa-solid fa-rotate-left"></i> Rotate -90°
+                                </button>
+                                <button class="btn btn-secondary flex-1" id="rotate-right-btn">
+                                    <i class="fa-solid fa-rotate-right"></i> Rotate 90°
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="crop-actions-block">
+                            <button class="btn btn-primary w-full" id="apply-crop-btn">
+                                <i class="fa-solid fa-crop-simple"></i> Crop Selection
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tab Panel: Draw, Text, Stickers & Frames -->
+                    <div class="editor-tab-panel" id="editor-panel-draw-tab">
+                        <!-- Freehand Drawing Controls -->
+                        <div class="control-group">
+                            <h3 class="panel-section-title">Freehand Markup Draw</h3>
+                            <div class="draw-modes-row">
+                                <button class="btn btn-secondary w-full" id="draw-mode-toggle-btn">
+                                    <i class="fa-solid fa-paint-brush"></i> <span>Draw Mode: OFF</span>
+                                </button>
+                            </div>
+                            <div class="color-picker-palette" id="brush-colors">
+                                <button class="color-dot red active" data-color="#ef4444" style="background-color: #ef4444;"></button>
+                                <button class="color-dot blue" data-color="#3b82f6" style="background-color: #3b82f6;"></button>
+                                <button class="color-dot green" data-color="#10b981" style="background-color: #10b981;"></button>
+                                <button class="color-dot yellow" data-color="#eab308" style="background-color: #eab308;"></button>
+                                <button class="color-dot white" data-color="#ffffff" style="background-color: #ffffff;"></button>
+                                <button class="color-dot black" data-color="#000000" style="background-color: #000000;"></button>
+                            </div>
+                            <div class="slider-control">
+                                <div class="slider-info">
+                                    <span>Brush Width</span>
+                                    <span class="slider-value" id="val-draw-brush-width">5px</span>
+                                </div>
+                                <input type="range" class="control-slider" id="slider-draw-brush-width" min="2" max="25" value="5">
+                            </div>
+                        </div>
+
+                        <!-- Text Overlay Controls -->
+                        <div class="control-group">
+                            <h3 class="panel-section-title">Add Text Overlay</h3>
+                            <div class="text-input-wrapper">
+                                <input type="text" id="draw-text-input" placeholder="Type text here..." style="width: 100%; padding: 10px 14px; border-radius: 10px; background-color: rgba(0,0,0,0.15); border: 1px solid var(--border-color); color: var(--text-primary); outline: none;">
+                            </div>
+                            <button class="btn btn-secondary w-full" id="draw-add-text-btn">
+                                <i class="fa-solid fa-font"></i> Click Canvas to Stamp Text
+                            </button>
+                        </div>
+
+                        <!-- Sticker stamps -->
+                        <div class="control-group">
+                            <h3 class="panel-section-title">Add Sticker / Emoji</h3>
+                            <div class="stickers-emoji-grid" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px;">
+                                <button class="emoji-sticker-btn" data-emoji="❤️" style="background:none; border:none; font-size:24px; cursor:pointer;">❤️</button>
+                                <button class="emoji-sticker-btn" data-emoji="🔥" style="background:none; border:none; font-size:24px; cursor:pointer;">🔥</button>
+                                <button class="emoji-sticker-btn" data-emoji="🌟" style="background:none; border:none; font-size:24px; cursor:pointer;">🌟</button>
+                                <button class="emoji-sticker-btn" data-emoji="😎" style="background:none; border:none; font-size:24px; cursor:pointer;">😎</button>
+                                <button class="emoji-sticker-btn" data-emoji="🎉" style="background:none; border:none; font-size:24px; cursor:pointer;">🎉</button>
+                                <button class="emoji-sticker-btn" data-emoji="🚀" style="background:none; border:none; font-size:24px; cursor:pointer;">🚀</button>
+                            </div>
+                        </div>
+
+                        <!-- Artistic Borders & Frames -->
+                        <div class="control-group">
+                            <h3 class="panel-section-title">Artistic Frame Styles</h3>
+                            <div class="frames-actions-row" style="display: flex; gap: 10px;">
+                                <button class="btn btn-secondary flex-1" id="frame-polaroid-btn">
+                                    <i class="fa-solid fa-square-full"></i> Polaroid Border
+                                </button>
+                                <button class="btn btn-secondary flex-1" id="frame-neon-btn">
+                                    <i class="fa-solid fa-circle-nodes"></i> Neon Frame
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab Panel: AI Photo Assist (Eraser & Mover) -->
+                    <div class="editor-tab-panel" id="editor-panel-ai-tab">
+                        <div class="control-group">
+                            <h3 class="panel-section-title">Photo Assist tools</h3>
+                            <p class="panel-info-desc">Generative AI analyzes the image structure to erase objects or move them seamlessly.</p>
+                            
+                            <div class="ai-tool-select-row">
+                                <button class="ai-tool-btn active" id="ai-tool-eraser" data-ai-tool="eraser">
+                                    <i class="fa-solid fa-eraser"></i>
+                                    <span>Object Eraser</span>
+                                </button>
+                                <button class="ai-tool-btn" id="ai-tool-mover" data-ai-tool="mover">
+                                    <i class="fa-solid fa-arrows-up-down-left-right"></i>
+                                    <span>Object Mover</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Object Eraser details -->
+                        <div class="ai-options-section" id="ai-eraser-options">
+                            <div class="control-group">
+                                <h3 class="panel-section-title">Brush Configuration</h3>
+                                <div class="slider-control">
+                                    <div class="slider-info">
+                                        <span>Brush Size</span>
+                                        <span class="slider-value" id="val-brush-size">20px</span>
+                                    </div>
+                                    <input type="range" class="control-slider" id="slider-brush-size" min="5" max="60" value="20">
+                                </div>
+                                <p class="brush-instruction"><i class="fa-solid fa-info-circle"></i> Drag your brush over any object on the canvas, then press the Erase button below.</p>
+                            </div>
+
+                            <button class="btn btn-danger w-full" id="run-eraser-btn" disabled>
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Erase Object
+                            </button>
+                        </div>
+
+                        <!-- Object Mover details -->
+                        <div class="ai-options-section hidden" id="ai-mover-options">
+                            <div class="control-group">
+                                <h3 class="panel-section-title">Object Positioning</h3>
+                                <p class="brush-instruction"><i class="fa-solid fa-info-circle"></i> Select the glowing container box in the canvas, drag it to a new location, and click 'Reposition' to fill the original region.</p>
+                            </div>
+
+                            <button class="btn btn-secondary w-full" id="run-mover-btn">
+                                <i class="fa-solid fa-sparkles"></i> Reposition Object
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Editor footer save -->
+                    <div class="editor-footer">
+                        <button class="btn btn-secondary" id="editor-cancel-btn">Cancel</button>
+                        <button class="btn btn-primary" id="editor-save-btn"><i class="fa-solid fa-check"></i> Save Changes</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. STORY PLAYBACK MODAL -->
+    <div class="story-overlay hidden" id="story-modal">
+        <!-- Progress Bars Header -->
+        <div class="story-progress-container" id="story-progress-container">
+            <!-- Dynamic step progress segments will be generated here -->
+        </div>
+
+        <div class="story-header">
+            <div class="story-user-info">
+                <i class="fa-solid fa-photo-film story-circle-icon"></i>
+                <div class="story-meta-texts">
+                    <h3 id="story-title-display">Curated Slideshow Highlights</h3>
+                    <span id="story-date-display">Generated just now</span>
+                </div>
+            </div>
+            <div class="story-header-actions">
+                <button class="story-action-btn" id="story-music-toggle" title="Mute/Unmute Audio Background">
+                    <i class="fa-solid fa-music"></i>
+                </button>
+                <button class="story-close-btn" id="story-close" aria-label="Close Story">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Slide Content Wrapper -->
+        <div class="story-slide-content">
+            <button class="story-nav-btn left" id="story-prev" aria-label="Previous Slide"></button>
+            
+            <div class="story-image-wrapper">
+                <img src="" alt="Story Media" id="story-img">
+                <div class="story-caption" id="story-caption">Beautiful memory</div>
+            </div>
+
+            <button class="story-nav-btn right" id="story-next" aria-label="Next Slide"></button>
+        </div>
+
+        <!-- Music Simulated Visualizer -->
+        <div class="story-audio-visualizer" id="story-visualizer">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+
+        <!-- Hidden audio player for stories -->
+        <audio id="story-bg-music" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+    </div>
+
+    <!-- 5. SECURE LOCK PIN-PAD OVERLAY -->
+    <div class="modal-overlay hidden" id="secure-lock-modal">
+        <div class="glass-card lockpad-card">
+            <div class="lockpad-header">
+                <div class="lock-shield-icon">
+                    <i class="fa-solid fa-shield-halved animate-pulse"></i>
+                </div>
+                <h2>Secure Folder Vault</h2>
+                <p>Enter PIN to access protected files</p>
+                <div class="pin-display">
+                    <div class="pin-dot"></div>
+                    <div class="pin-dot"></div>
+                    <div class="pin-dot"></div>
+                    <div class="pin-dot"></div>
+                </div>
+            </div>
+            
+            <div class="lockpad-body">
+                <div class="pin-buttons-grid">
+                    <button class="pin-btn" data-num="1">1</button>
+                    <button class="pin-btn" data-num="2">2</button>
+                    <button class="pin-btn" data-num="3">3</button>
+                    <button class="pin-btn" data-num="4">4</button>
+                    <button class="pin-btn" data-num="5">5</button>
+                    <button class="pin-btn" data-num="6">6</button>
+                    <button class="pin-btn" data-num="7">7</button>
+                    <button class="pin-btn" data-num="8">8</button>
+                    <button class="pin-btn" data-num="9">9</button>
+                    <button class="pin-btn control" id="pin-clear" title="Clear entered digits"><i class="fa-solid fa-delete-left"></i></button>
+                    <button class="pin-btn" data-num="0">0</button>
+                    <button class="pin-btn control" id="pin-close" title="Close vault locker"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="lockpad-footer">
+                    <p class="pin-help">Default lock PIN is <strong class="accent-text">1234</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. SHARE PHOTO MODAL -->
+    <div class="modal-overlay hidden" id="share-modal">
+        <div class="glass-card modal-card share-card">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-share-nodes text-glow"></i> Share Photo</h2>
+                <button class="close-btn" id="share-close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body share-body">
+                <p class="modal-desc">Share this photo instantly with friends on your favorite social platforms.</p>
+                
+                <div class="share-options-grid">
+                    <button class="share-platform-btn whatsapp" data-platform="WhatsApp">
+                        <i class="fa-brands fa-whatsapp"></i>
+                        <span>WhatsApp</span>
+                    </button>
+                    <button class="share-platform-btn facebook" data-platform="Facebook">
+                        <i class="fa-brands fa-facebook-f"></i>
+                        <span>Facebook</span>
+                    </button>
+                    <button class="share-platform-btn instagram" data-platform="Instagram">
+                        <i class="fa-brands fa-instagram"></i>
+                        <span>Instagram</span>
+                    </button>
+                    <button class="share-platform-btn twitter" data-platform="Twitter/X">
+                        <i class="fa-brands fa-x-twitter"></i>
+                        <span>Twitter/X</span>
+                    </button>
+                    <button class="share-platform-btn email" data-platform="Email">
+                        <i class="fa-solid fa-envelope"></i>
+                        <span>Email</span>
+                    </button>
+                    <button class="share-platform-btn link" id="share-copy-link-btn">
+                        <i class="fa-solid fa-link"></i>
+                        <span>Copy Link</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Script File -->
+    <script src="app.js"></script>
+</body>
+</html>
